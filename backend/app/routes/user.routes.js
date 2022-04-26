@@ -1,6 +1,13 @@
 module.exports = app => {
+    const authController = require("../controllers/auth.controller.js");
     const users = require("../controllers/user.controller.js");
     var router = require("express").Router();
+
+    // auth
+    router.post("/register", authController.signUp);
+    router.post("/login", authController.signIn);
+    //router.get("/logout", authController.logout);
+
     // Create a new user
     router.post("/", users.create);
     // Retrieve all users

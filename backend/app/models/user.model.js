@@ -5,7 +5,7 @@ const User = function(user) {
   this.email = user.email;
   this.password = user.password;
 };
-User.create = (newUser, result) => {
+User.signUp = (newUser, result) => {
   sql.query("INSERT INTO users SET ?", newUser, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -16,7 +16,29 @@ User.create = (newUser, result) => {
     result(null, { id: res.insertId, ...newUser });
   });
 };
-User.findById = (id, result) => {
+User.login = async (email, password, result) => {
+  sql.query("SELECT * FROM users WHERE email = ? AND password = ?;", [email, password], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+    console.log("Utilisateur trouvé: ", res[0].id_user);
+    result(null, res[0].id_user);
+  });
+};
+/*User.create = (newUser, result) => {
+  sql.query("INSERT INTO users SET ?", newUser, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+    console.log("Utilisateur créé: ", { id: res.insertId, ...newUser });
+    result(null, { id: res.insertId, ...newUser });
+  });
+};*/
+/*User.findById = (id, result) => {
   sql.query(`SELECT * FROM users WHERE id = ${id}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -31,7 +53,7 @@ User.findById = (id, result) => {
     // Utilisateur introuvable
     result({ kind: "not_found" }, null);
   });
-};
+};*/
 User.getAll = (pseudo, result) => {
   let query = "SELECT * FROM users";
   if (pseudo) {

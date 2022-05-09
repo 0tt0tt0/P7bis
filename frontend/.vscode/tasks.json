@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"path": "groupomania-app/",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build - groupomania-app",
+			"detail": "vue-cli-service build"
+		}
+	]
+}

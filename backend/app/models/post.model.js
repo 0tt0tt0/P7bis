@@ -1,48 +1,38 @@
 const sql = require("./db.js");
 // constructor
-const Post = function(post) {
-  this.content = post.content;
-  this.imageUrl = post.imageUrl;
+const Post = function (post) {
+  this.post_content = post.post_content;
+  this.post_datetime = post.post_datetime;
+  this.post_user_id = post.post_user_id;
+  //this.user_id = post.user_id;
 };
 Post.create = (newPost, result) => {
   sql.query("INSERT INTO posts SET ?", newPost, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log("error: Le post ne peut-être ajouter à la bdd", err);
       result(err, null);
       return;
     }
-    console.log("created post: ", { id: res.insertId, ...newPost });
-    result(null, { id: res.insertId, ...newPost });
+    console.log(res.insertId);
+    sql.query("SELECT * FROM posts as p inner join users as u ON p.post_user_id = u.id_user WHERE id_post= ? ORDER BY p.post_datetime DESC", res.insertId , (err,res)=>{
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+      console.log(res);
+      result(null, res);
+    });
   });
 };
-Post.findById = (id, result) => {
-  sql.query(`SELECT * FROM posts WHERE id = ${id}`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-    if (res.length) {
-      console.log("found post: ", res[0]);
-      result(null, res[0]);
-      return;
-    }
-    // Post introuvable
-    result({ kind: "not_found" }, null);
-  });
-};
-Post.getAll = (title, result) => {
-  let query = "SELECT * FROM posts";
-  if (title) {
-    query += ` WHERE title LIKE '%${title}%'`;
-  }
-  sql.query(query, (err, res) => {
+
+Post.getAllPublished = result => {
+  sql.query("SELECT * FROM posts as p inner join users as u ON p.post_user_id = u.id_user ORDER BY p.post_datetime DESC", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
       return;
     }
-    console.log("Posts : ", res);
     result(null, res);
   });
 };
@@ -61,7 +51,7 @@ Post.updateById = (id, post, result) => {
         result({ kind: "not_found" }, null);
         return;
       }
-      console.log("updated post: ", { id: id, ...post});
+      console.log("updated post: ", { id: id, ...post });
       result(null, { id: id, ...post });
     }
   );

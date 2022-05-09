@@ -2,8 +2,10 @@ const express = require("express");
 const bodyParser = require ("body-parser");
 const cors = require("cors");
 const app = express();
+/*const cookieParser = require('cookie-parser');
+app.use(cookieParser());*/
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: '*'
 };
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));

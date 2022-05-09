@@ -9,7 +9,8 @@ exports.create = (req, res) => {
   }
   // Create a like
   const like = new Like({
-    content: req.body.content,
+    like_post_id: req.params.like_post_id,
+    like_user_id: req.params.like_user_id,  
   });
   // Save like in the database
 Like.create(like, (err, data) => {
@@ -22,9 +23,8 @@ Like.create(like, (err, data) => {
   });
 };
 // Retrieve all likes from the database (with condition).
-exports.findAll = (req, res) => {
-    const content = req.query.content;
-    Like.getAll(content, (err, data) => {
+exports.findAll = (req, res) => {;
+    Like.getAll((err, data) => {
       if (err)
         res.status(500).send({
           message:
@@ -34,20 +34,26 @@ exports.findAll = (req, res) => {
     });
 };
 // Find a single like with a id
-exports.findOne = (req, res) => {
-    Like.findById(req.params.id, (err, data) => {
-        if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({
-              message: `like non trouvé avec l'id ${req.params.id}.`
-            });
-          } else {
-            res.status(500).send({
-              message: "Erreur pour l'id " + req.params.id
-            });
-          }
-        } else res.send(data);
-    });
+exports.countbyPostId = (req, res) => {
+  Like.CountById(req.params.id, (err, data) => {
+      if (err) {
+        res.status(500).send({
+            message: "Erreur pour l'id " + req.params.id
+        });
+      }
+      res.send(data);
+  });
+};
+// Find like with User and Post id
+exports.getLikesByUserPostId = (req, res) => {
+  Like.GetById(req.params.post_id, req.params.user_id, (err, data) => {
+      if (err) {
+        res.status(500).send({
+            message: "Erreur pour l'id " + req.body.id
+        });
+      }
+      res.send(data);
+  });
 };
 // Update a like identified by the id in the request
 exports.update = (req, res) => {
@@ -78,19 +84,19 @@ exports.update = (req, res) => {
 };
 // Delete a like with the specified id in the request
 exports.delete = (req, res) => {
-   Like.remove(req.params.id, (err, data) => {
-        if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({
-              message: `Not found like with id ${req.params.id}.`
-            });
-          } else {
-            res.status(500).send({
-              message: "Could not delete like with id " + req.params.id
-            });
-          }
-        } else res.send({ message: `like was deleted successfully!` });
-      });
+  Like.remove(req.params.like_post_id, req.params.like_user_id, (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found like with id ${req.params.id}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Could not delete like with id " + req.params.id
+          });
+        }
+      } else res.send({ message: `like was deleted successfully!` });
+    });
 };
 // Delete all Users from the database.
 exports.deleteAll = (req, res) => {

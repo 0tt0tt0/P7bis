@@ -1,47 +1,54 @@
 const sql = require("./db.js");
 // constructor
-const Like = function(user) {
-  this.like = user.like;
+const Like = function(like) {
+  this.like_post_id = like.like_post_id;
+  this.like_user_id = like.like_user_id;
 };
 Like.create = (newLike, result) => {
+  console.log(newLike);
   sql.query("INSERT INTO likes SET ?", newLike, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
       return;
     }
-    console.log("like créé: ", { id: res.insertId, ...newlike });
+    console.log("like créé: ", { id: res.insertId, ...newLike });
     result(null, { id: res.insertId, ...newLike });
   });
 };
-Like.findById = (id, result) => {
-  sql.query(`SELECT * FROM likes WHERE id = ${id}`, (err, res) => {
+Like.CountById = (post_id, result) => {
+  sql.query(`SELECT COUNT(like_post_id) as count from likes where like_post_id = ?`, post_id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
       return;
     }
-    if (res.length) {
-      console.log("likeaire trouvé: ", res[0]);
-      result(null, res[0]);
+    result(null, res[0]);
+    });
+};
+Like.GetById = (post_id, user_id, result) => {
+  sql.query(`SELECT * FROM likes where like_post_id = ? AND like_user_id = ?`, [post_id, user_id], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
       return;
     }
-    // likeaire introuvable
-    result({ kind: "not_found" }, null);
-  });
+    else if(res.length==0){
+      console.log(res.length);
+      result(null, false);
+      return;
+    }
+    result(null, true);
+    });
 };
-Like.getAll = (like, result) => {
+Like.getAll = (result) => {
   let query = "SELECT * FROM likes";
-  if (like) {
-    query += ` WHERE like LIKE '%${like}%'`;
-  }
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
       return;
     }
-    console.log("likes : ", res);
     result(null, res);
   });
 };
@@ -65,8 +72,8 @@ Like.updateById = (id, user, result) => {
     }
   );
 };
-Like.remove = (id, result) => {
-  sql.query("DELETE FROM likes WHERE id = ?", id, (err, res) => {
+Like.remove = (like_post_id, like_user_id, result) => {
+  sql.query('DELETE FROM likes WHERE like_post_id = ? and like_user_id = ?', [like_post_id, like_user_id], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -77,7 +84,7 @@ Like.remove = (id, result) => {
       result({ kind: "not_found" }, null);
       return;
     }
-    console.log("Suppression du likeaire avec l'id: ", id);
+    console.log("Suppression du like");
     result(null, res);
   });
 };

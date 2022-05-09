@@ -1,4 +1,7 @@
 const Post = require("../models/post.model.js");
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 // Create and Save a new User
 exports.create = (req, res) => {
   // Validate request
@@ -8,47 +11,41 @@ exports.create = (req, res) => {
     });
   }
   // Create a Post
+  var datenow = Date.now()+14400000;
+
+  var post_datetime = new Date(datenow).toISOString().slice(0, 19).replace('T', ' ');
+  console.log(post_datetime);
   const post = new Post({
-    content: req.body.content,
-    imageUrl: req.body.imageUrl,
+    post_content: req.body.post_content,
+    post_datetime : post_datetime,
+    post_user_id : req.body.post_user_id,
+    //user_id : userId,
   });
   // Save Post in the database
   Post.create(post, (err, data) => {
+    //console.log(token);
     if (err)
       res.status(500).send({
         message:
           err.message || "Une erreur a eu lieu pendant la création du post."
       });
-    else res.send(data);
+    else {
+      console.log("ICI");
+      console.log(data);
+      res.send(data);
+    }
   });
 };
-// Retrieve all Posts from the database (with condition).
-exports.findAll = (req, res) => {
-    const content = req.query.content;
-    Post.getAll(content, (err, data) => {
-      if (err)
-        res.status(500).send({
-          message:
-            err.message || "Erreur"
-        });
-      else res.send(data);
-    });
-};
-// Find a single Post with a id
-exports.findOne = (req, res) => {
-    Post.findById(req.params.id, (err, data) => {
-        if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({
-              message: `Post non trouvé avec l'id ${req.params.id}.`
-            });
-          } else {
-            res.status(500).send({
-              message: "Erreur pour l'id " + req.params.id
-            });
-          }
-        } else res.send(data);
-    });
+// Retrieve all Posts from the database
+exports.findAllPublished = (req, res) => {
+  Post.getAllPublished((err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving posts."
+      });
+    else res.send(data);
+  });
 };
 // Update a Post identified by the id in the request
 exports.update = (req, res) => {
@@ -93,7 +90,7 @@ exports.delete = (req, res) => {
         } else res.send({ message: `Post was deleted successfully!` });
       });
 };
-// Delete all Users from the database.
+// Delete all Posts from the database.
 exports.deleteAll = (req, res) => {
     Post.removeAll((err, data) => {
         if (err)

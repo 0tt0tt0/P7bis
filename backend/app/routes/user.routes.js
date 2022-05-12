@@ -16,7 +16,7 @@ module.exports = app => {
     // Retrieve a single user with id
     router.get("/:id", users.findOne);
     // Update a user with id
-    router.put("/:id", auth, users.update);
+    router.put("/:id", users.update);
     // Delete a user with id
     router.delete("/:id", users.delete);
     // Delete all users

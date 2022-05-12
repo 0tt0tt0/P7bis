@@ -14,6 +14,7 @@
 
 <script>
 import axios from 'axios'
+import { mapState } from 'vuex'
 
 export default {
 	name: 'LoginBox',
@@ -21,6 +22,9 @@ export default {
 		msg:String,
 	},
 	components:{
+	},
+	computed: {
+		...mapState("isAdmin")
 	},
 	data(){
 		return{
@@ -41,9 +45,14 @@ export default {
 				.post('http://localhost:8080/api/users/login', {email : this.email, password :this.password})
 				.then(res => {
 				this.resmessage = res.message;
+				console.log(res.data);
 				//création d'un petit localStorage pour garder le token
-					localStorage.setItem('userToken', res.data.token);
-					localStorage.setItem('userId', res.data.userId);
+					if (res.data.isAdmin == 1){
+						this.$store.commit('ADMIN_POWER');
+						console.log(this.$store.state.isAdmin)
+					}
+					localStorage.setItem('token', res.data.token);
+					localStorage.setItem('userId', res.data.id_user);
 					this.$router.push('/forum');
 				})
 				//.catch(() => this.msgAlert(true, "Votre mot de passe ou identifiants sont incorrects.", "danger"));

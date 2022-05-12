@@ -11,14 +11,18 @@ exports.create = (req, res) => {
     });
   }
   // Create a Post
-  var datenow = Date.now()+14400000;
-
-  var post_datetime = new Date(datenow).toISOString().slice(0, 19).replace('T', ' ');
+  var date = Date.now();
+  var post_datetime = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
+  token = req.body.token;
   console.log(post_datetime);
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const userId = decodedToken.id_user;
+  console.log(userId);
   const post = new Post({
     post_content: req.body.post_content,
     post_datetime : post_datetime,
-    post_user_id : req.body.post_user_id,
+    post_user_id : userId,
+    post_dateVue : req.body.dateVue,
     //user_id : userId,
   });
   // Save Post in the database

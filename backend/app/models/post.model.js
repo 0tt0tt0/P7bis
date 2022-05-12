@@ -3,6 +3,7 @@ const sql = require("./db.js");
 const Post = function (post) {
   this.post_content = post.post_content;
   this.post_datetime = post.post_datetime;
+  this.post_dateVue = post.post_dateVue;
   this.post_user_id = post.post_user_id;
   //this.user_id = post.user_id;
 };
@@ -57,7 +58,7 @@ Post.updateById = (id, post, result) => {
   );
 };
 Post.remove = (id, result) => {
-  sql.query("DELETE FROM posts WHERE id = ?", id, (err, res) => {
+  sql.query("DELETE FROM posts WHERE id_post = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

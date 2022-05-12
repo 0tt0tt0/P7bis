@@ -12,6 +12,8 @@ export default {
 	name: 'UserInfo',
     methods:{
         Logout() {
+            this.$store.commit('ADMIN_STOP');
+            console.log(this.$store.state.isAdmin);
             localStorage.clear();
             this.$router.push('/auth/login')
         },

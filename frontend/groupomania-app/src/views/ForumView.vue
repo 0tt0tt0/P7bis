@@ -17,6 +17,8 @@
 			v-bind:key="post.id_post"
 			v-bind:post="post"
 			v-bind:comments="comments"
+			v-on:deletePost="deletePost"
+			v-on:deleteComment="deleteComment"
 			v-on:newLike="addLike"
 			v-on:removeLike="removeLike"
 			v-on:newComment="newComment"
@@ -39,19 +41,12 @@ export default {
 	},
 	data(){
 		return{
-			posts: [{
-				id_post: 0,
-				post_content: '',
-				post_datetime: '2022-05-07 14:51:12',
-				post_user_id: 0,
-				like_count: 0,
-				comment_count: 0,
-				alreadyLiked: false,
-			}],
+			posts: [],
 			user_id: '',
 			likes: [],
 			comments:[],
 			postcontent: '',
+			token: '',
 		}
 	},
 	computed: {
@@ -59,9 +54,9 @@ export default {
 	},
 	methods:{
 		newPost() {
-			let user_id = localStorage.getItem("userId");
+			console.log(this.token);
 			axios
-				.post('http://localhost:8080/api/posts/create', {post_content : this.postcontent, post_user_id : user_id})
+				.post('http://localhost:8080/api/posts/create', {post_content : this.postcontent, token: this.token, dateVue: this.now})
 				.then(res=>{
 					let newpost = res.data[0];
 					newpost.comment_count = 0;
@@ -108,8 +103,34 @@ export default {
 					}
 				});
 		},
+		deletePost(id){
+			axios
+				.delete('http://localhost:8080/api/posts/'+id)
+				.then(res=>{
+					if(res){
+						let postToRemove = this.posts.find(post => post.id_post === id);
+						let indexPostToDelete = this.posts.indexOf(postToRemove);
+						this.posts.splice(indexPostToDelete, 1);
+					}
+				});
+		},
+		deleteComment(id, post_id){
+			console.log(id);
+			axios
+				.delete('http://localhost:8080/api/comments/'+id)
+				.then(res=>{
+					if(res){
+						let commentToRemove = this.comments.find(comment => comment.id_comment === id);
+						let indexCommentToDelete = this.posts.indexOf(commentToRemove);
+						this.comments.splice(indexCommentToDelete, 1);
+						let postToUpdate = this.posts.find(post => post.id_post == post_id);
+						postToUpdate.comment_count = --postToUpdate.comment_count;
+					}
+				});
+		}
 	},
 	mounted(){
+		this.token = localStorage.getItem("token");
 		axios 
 			.get('http://localhost:8080/api/likes/')
 			.then (res=>{

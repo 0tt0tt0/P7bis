@@ -37,61 +37,65 @@ exports.register = (req, res) => {
     const user = new User({
       pseudo: req.body.pseudo,
       email: req.body.email,
-      hash: hash
+      hash: hash,
+      admin: req.body.admin,
     });
       // Save User in the database
-    User.signUp(user, (err) => {
+    User.signUp(user, (err, resultat) => {
       if (err) {
         res.status(500).send({
         message:
           err.message || "Une erreur a eu lieu pendant la création de l'utilisateur."
         });
       }
+      const id_user = resultat.id_user;
+      const token = jwt.sign(
+        { id_user: id_user },
+        process.env.SECRET,
+        { expiresIn: '24h' }
+      );
       res.status(200).json({
-        id_user: res.id_user,
-        token: jwt.sign(
-            { id_user: res.id_user },
-            process.env.SECRET,
-            { expiresIn: '24h' }
-          )
+        id_user: id_user,
+        token: token,
       });
   });
 })
 }
 
-exports.login = async (req, res) => {
-  const { email, password } = req.body
-  try {
-    await User.signIn(email, (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        res.status(400).send({
-          message: "Veuillez-réessayer" 
-        });
-        return;
-      }
-      bcrypt.compare(password, res.hash)
-        .then(valid => {
-          if (!valid) {
-            return res.status(401).json({ error: 'Mot de passe incorrect !' });
-          }
-          console.log("Utilisateur trouvé: ", res.id_user);
-          const token = createToken(res.id_user);
-          console.log(token);
-          //res.cookie('jwt', token, { httpOnly: true, maxAge});
-          res.status(200).send({
-            message: "L'utilisateur est bien connecté!",
-            id_user: res.id_user,
-            token: token
-          });
-        })
-      ;
-    });
-  }
-  catch (err){
-    //const errors = signInErrors(err);
-    res.status(400);
-  }
+exports.login = async (req, result) => {
+  const { email, password } = req.body;
+  User.signIn(email, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result.status(400).send({
+        message: "Veuillez-réessayer" 
+      });
+      return;
+    }
+    bcrypt.compare(password, res.hash)
+      .then(valid => {
+        if (!valid) {
+          return result.status(401).json({ error: 'Mot de passe incorrect !' });
+        }
+        console.log("Utilisateur trouvé: ", res.id_user);
+        const id_user = res.id_user;
+        const isAdmin = res.admin;
+        const token = jwt.sign(
+          { id_user: id_user },
+          process.env.SECRET,
+          { expiresIn: '24h' }
+        );
+        console.log(token);
+      result.status(200).send({
+      message: "L'utilisateur est bien connecté!",
+      token: token,
+      id_user: id_user,
+      isAdmin: isAdmin,
+      });
+      
+  })
+
+})
 }
 
 module.exports.logout = (req, res) => {

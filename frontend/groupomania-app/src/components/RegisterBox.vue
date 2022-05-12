@@ -13,10 +13,13 @@
 
 <script>
 import axios from 'axios'
-import bcrypt from 'bcrypt'
-import dotenv from 'dotenv'
+//import bcrypt from 'bcrypt'
+//import dotenv from 'dotenv'
 
-dotenv.config();
+// const bcrypt = require('bcrypt');
+// const dotenv = require('dotenv');
+
+// dotenv.config();
 
 export default {
 	name: 'LoginBox',
@@ -35,31 +38,34 @@ export default {
             pseudo: '',
 			email: '',
 			password: '',
-			hash: '',
+			admin: 0,
 			//form: { },
 		}
 	},
 	methods:{
 		onSubmit() {
-			bcrypt.hash(this.password, 10)
-			.then(hash => {
-				this.hash = hash
-				});
+			// bcrypt.hash(this.password, 10)
+			// .then(hash => {
+			// 	this.hash = hash
+			// 	});
 			//event.preventDefault()
 			axios
-				.post('http://localhost:8080/api/users/register', {pseudo: this.pseudo, email : this.email, password :this.hash})
+				.get('http://localhost:8080/api/users/')
+				.then(res =>{
+					if (!res.length){
+						this.admin = 1;
+					}
+				})
+			axios
+				.post('http://localhost:8080/api/users/register', {pseudo: this.pseudo, email : this.email, password :this.password, admin: this.admin})
 				.then(res => {
 				//création d'un petit localStorage pour garder le token
-				localStorage.setItem('userToken', res.data.token);
-				//localStorage.setItem('userId', res.data.userId)
+				localStorage.setItem('token', res.data.token);
+				localStorage.setItem('userId', res.data.id_user)
 				this.msgAlert = (true, "Vous êtes maintenant identifiez.", "success");
-				setTimeout(function(){ document.location.href="/" }, 2000);
 				this.$router.push('/forum');
 				})
 			},
-	},
-	created(){
-		dotenv.config();
 	}
 }
 </script>

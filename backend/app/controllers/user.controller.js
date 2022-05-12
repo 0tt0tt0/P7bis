@@ -11,7 +11,8 @@ exports.create = (req, res) => {
   const user = new User({
     pseudo: req.body.pseudo,
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    admin: req.body.admin,
   });
   // Save User in the database
   User.create(user, (err, data) => {
@@ -23,10 +24,9 @@ exports.create = (req, res) => {
     else res.send(data);
   });
 };
-// Retrieve all Users from the database (with condition).
+// Retrieve all Users from the database.
 exports.findAll = (req, res) => {
-    const pseudo = req.query.pseudo;
-    User.getAll(pseudo, (err, data) => {
+    User.getAll((err, data) => {
       if (err)
         res.status(500).send({
           message:

@@ -79,18 +79,18 @@ exports.getAllComments = (req, res) => {
 //   );
 // };
 // Delete a comment with the specified id in the request
-// exports.delete = (req, res) => {
-//    Comment.remove(req.params.id, (err, data) => {
-//         if (err) {
-//           if (err.kind === "not_found") {
-//             res.status(404).send({
-//               message: `Not found comment with id ${req.params.id}.`
-//             });
-//           } else {
-//             res.status(500).send({
-//               message: "Could not delete comment with id " + req.params.id
-//             });
-//           }
-//         } else res.send({ message: `comment was deleted successfully!` });
-//       });
-// };
+exports.delete = (req, res) => {
+   Comment.remove(req.params.id, (err, data) => {
+        if (err) {
+          if (err.kind === "not_found") {
+            res.status(404).send({
+              message: `Not found comment with id ${req.params.id}.`
+            });
+          } else {
+            res.status(500).send({
+              message: "Could not delete comment with id " + req.params.id
+            });
+          }
+        } else res.send({ message: `comment was deleted successfully!` });
+      });
+};

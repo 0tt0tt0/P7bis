@@ -71,20 +71,20 @@ Comment.getAll = result => {
 //     }
 //   );
 // };
-// Comment.remove = (id, result) => {
-//   sql.query("DELETE FROM comments WHERE id = ?", id, (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-//     if (res.affectedRows == 0) {
-//       // Commentaire introuvable avec l'id
-//       result({ kind: "not_found" }, null);
-//       return;
-//     }
-//     console.log("Suppression du Commentaire avec l'id: ", id);
-//     result(null, res);
-//   });
-// };
+Comment.remove = (id, result) => {
+  sql.query("DELETE FROM comments WHERE id_comment = ?", id, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+    if (res.affectedRows == 0) {
+      // Commentaire introuvable avec l'id
+      result({ kind: "not_found" }, null);
+      return;
+    }
+    console.log("Suppression du Commentaire avec l'id: ", id);
+    result(null, res);
+  });
+};
 module.exports = Comment;

@@ -4,6 +4,7 @@ const User = function(user) {
   this.pseudo = user.pseudo;
   this.email = user.email;
   this.hash = user.hash;
+  this.admin = user.admin;
 };
 User.signUp = (newUser, result) => {
   sql.query("INSERT INTO users SET ?", newUser, (err, res) => {
@@ -24,7 +25,7 @@ User.signIn = async (email, result) => {
       return;
     }
     else if(!res.length){
-      result({ kind: "not_found" }, null);
+      result(err, null);
       return;
     }
     console.log(res); 
@@ -59,11 +60,8 @@ User.findById = (id, result) => {
     result({ kind: "not_found" }, null);
   });
 };
-User.getAll = (pseudo, result) => {
+User.getAll = result => {
   let query = "SELECT * FROM users";
-  if (pseudo) {
-    query += ` WHERE pseudo LIKE '%${pseudo}%'`;
-  }
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);

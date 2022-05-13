@@ -2,14 +2,12 @@
 	<div id ="userInfo">
 		<UserInfo/>
 	</div>
-	<h3> Bienvenue sur le forum, échangez avec vos collaborateurs dès maintenant ! </h3>
+	<h3 id="bienvenue"> Bienvenue sur le forum, échangez avec vos collaborateurs dès maintenant ! </h3>
     <div id="newPost">
-		<p> Postez quelquechose ... </p>
 		<form @submit="newPost()">
-			<p>
-				<label for= "content"> Post</label> : <input type= "postcontent" v-model="postcontent"/>
-				<input type="submit" value="Publier"/>
-			</p>
+			<label for= "content"> Post</label> : <input type= "postcontent" v-model="postcontent" placeholder="Postez quelquechose ..."/>
+			<!--<input type="file" accept="image/png, image/jpeg" Parcourir.../>-->
+			<input type="submit" value="Publier"/>
 		</form>
     </div>
 	<div id="displayPosts">
@@ -150,6 +148,7 @@ export default {
 					post.like_count = 0;
 					post.comment_count = 0;
 					post.alreadyLiked = false;
+
 				
 				/**/let user_id = localStorage.getItem("userId");
 
@@ -181,5 +180,8 @@ export default {
 <style>
 	input {
 		border : solid 1px black;
+	}
+	#newPost{
+		padding: 20px;
 	}
 </style>

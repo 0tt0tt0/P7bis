@@ -4,22 +4,17 @@
 		<p>
 			<label for= "pseudo"> Pseudo : </label> <input type= "pseudo" id= "pseudo" v-model= "pseudo" />
             <label for= "email"> E-mail : </label> <input type= "email" id= "email" v-model= "email" />
-			<label for= "password"> Mot de passe : </label> <input type= "password" id= "password" v-model="password" />
+			<label for= "password"> Mot de passe : </label> <input type= "password" minlength="8" id= "password" v-model="password" />
 			<input class="btn-submit" type="submit" value="S'enregistrer">
 		</p>
 	</form>
-	<!--<Alert :status="statusAlert" :message="messageAlert" :show="showAlert" />-->
+	<span class="msgAlert">{{this.messageAlert}}</span>
+	<p> Déja inscrit ? Connectez-vous !</p>
+    <router-link to="/auth/login">Se connecter</router-link>
 </template>
 
 <script>
 import axios from 'axios'
-//import bcrypt from 'bcrypt'
-//import dotenv from 'dotenv'
-
-// const bcrypt = require('bcrypt');
-// const dotenv = require('dotenv');
-
-// dotenv.config();
 
 export default {
 	name: 'LoginBox',
@@ -62,7 +57,7 @@ export default {
 				//création d'un petit localStorage pour garder le token
 				localStorage.setItem('token', res.data.token);
 				localStorage.setItem('userId', res.data.id_user)
-				this.msgAlert = (true, "Vous êtes maintenant identifiez.", "success");
+				this.messageAlert = res.message;
 				this.$router.push('/forum');
 				})
 			},

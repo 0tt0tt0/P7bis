@@ -1,7 +1,7 @@
 <template>
-	<h3> Bonjour, {{user.pseudo}} </h3>
-    <button @click="Logout" class="btn-logout">Se déconnecter</button>
+	<button @click="Logout" class="btn-logout">Se déconnecter</button>
     <button @click="Redirect">Mettre à jour mon profil</button>
+    <span id="bonjour"><h3> Bonjour,</h3><h3 class="user-pseudo">{{user.pseudo}} </h3></span>
 	<!--<Alert :status="statusAlert" :message="messageAlert" :show="showAlert" />-->
 </template>
 
@@ -41,4 +41,13 @@ export default {
 	input {
 		border : solid 1px black;
 	}
+    .user-pseudo{
+        color: #fc1f00
+    }
+    #bonjour{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+    }
 </style>

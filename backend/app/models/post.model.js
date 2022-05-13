@@ -5,6 +5,7 @@ const Post = function (post) {
   this.post_datetime = post.post_datetime;
   this.post_dateVue = post.post_dateVue;
   this.post_user_id = post.post_user_id;
+  this.imageUrl = post.imageUrl;
   //this.user_id = post.user_id;
 };
 Post.create = (newPost, result) => {

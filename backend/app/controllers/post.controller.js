@@ -23,6 +23,7 @@ exports.create = (req, res) => {
     post_datetime : post_datetime,
     post_user_id : userId,
     post_dateVue : req.body.dateVue,
+    //imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     //user_id : userId,
   });
   // Save Post in the database

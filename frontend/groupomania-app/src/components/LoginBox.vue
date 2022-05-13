@@ -1,15 +1,18 @@
 <template>
-<img alt="Vue logo" src="../assets/Groupomania_Logos/groupo.gif">
 	<h2> Veuillez-vous connecter : </h2>
 	<form @submit="onSubmit">
 		<p>
 			<label for= "email"> E-mail : </label> <input type= "email" id= "email" v-model= "email" />
-			<label for= "password"> Mot de passe : </label> <input type= "password" id= "password" v-model="password" />
+			<label for= "password"> Mot de passe : </label> <input type= "password" id= "password" minlength="8" v-model="password" />
 			<input class="btn-submit" type="submit" value="Se connecter">
 		</p>
 	</form>
 	<p v-if="resmessage!==''"> Veuillez-réessayer</p>
 	<!--<Alert :status="statusAlert" :message="messageAlert" :show="showAlert" />-->
+	<div class="register">
+		<p> Pas de compte ? Enregistrez-vous !</p>
+		<router-link to="/auth/register">S'enregistrer</router-link>
+  </div>
 </template>
 
 <script>

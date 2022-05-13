@@ -2,24 +2,19 @@
 		<div class="post post-container">
 			<!--<p> {{now}}</p>-->
 			<div class="post-header">
-				<strong>{{post.pseudo}}</strong>	
-				<p>{{formatDatePost(post.post_datetime)}}</p>
+				<span class="post-pseudo-head"><p class="post-pseudo-label">Publié par </p> <p class="post-pseudo"> {{post.pseudo}}</p></span>	
+				<p class="post-date">{{formatDatePost(post.post_datetime)}}</p>
 			</div>
 			
 			<div class ="post-content">
 				<p>{{post.post_content}}</p>
 			</div>
 
-			<div class= "post-react-count">
-				<p v-if="this.post.like_count !==0"> Mentions j'aime ({{post.like_count}}) </p>
-				<button v-show="this.post.comment_count!==0" @click="displayComments()">Commentaires ({{post.comment_count}}) </button>
-			</div>
-
 			<div class= "post-actions">
-				<button class="btn-like" v-if="this.post.alreadyLiked" @click="$emit('removeLike', this.post.id_post)">DisLiker</button>
-				<button class="btn-liked" v-else @click="$emit('newLike', this.post.id_post)">J'aime</button>
-
+				<button class="btn-liked" v-if="this.post.alreadyLiked" @click="$emit('removeLike', this.post.id_post)">J'aime ({{post.like_count}})</button>
+				<button class="btn-like" v-else @click="$emit('newLike', this.post.id_post)">J'aime ({{post.like_count}})</button>
 				<button class="btn-comment" @click="this.showCommentForm = !this.showCommentForm">Commenter</button>
+				<button class="btn-showcomments" v-show="this.post.comment_count!==0" @click="displayComments()">Commentaires ({{post.comment_count}}) </button>
 				<button class="btn-delete" v-if="this.$store.state.isAdmin" @click="$emit('deletePost', this.post.id_post)"> Supprimer</button>
 			</div> 
 			<div class="new-comment" v-if="showCommentForm">
@@ -28,11 +23,12 @@
 						<input class="btn-sumbit" type="submit" value="Publier">
 				</form>
 			</div>
-			<div v-if="showComments" class="comment comment-container">
-				<div v-for="(comment, index) in commentsByPost" v-bind:key="index">
-					<strong>{{comment.pseudo}}</strong>
+			<div v-if="showComments" class="comments comments-container">
+				<div class="comment-container" v-for="(comment, index) in commentsByPost" v-bind:key="index">
+					<div class="comment-header">
+						<span class="comment-pseudo-head"><p class="comment-pseudo"> {{comment.pseudo}}</p><p class="comment-date">{{formatDatePost(comment.comment_datetime)}}</p></span>		
+					</div>
 					<p> {{comment.comment_content}}</p>
-					<p>{{formatDatePost(comment.comment_datetime)}}</p>
 					<button class="btn-delete" v-if="this.$store.state.isAdmin" @click="$emit('deleteComment', comment.id_post, this.post.id_post)"> Supprimer</button>
 				</div>	
 			</div>
@@ -91,10 +87,10 @@ export default {
 				var sYear = parseInt(dateSQL.slice(0,5));
 				var sMonth = parseInt(dateSQL.slice(5,7))-1;
 				var sDay = parseInt(dateSQL.slice(8,10));
-				var sHour = parseInt(dateSQL.slice(11,13));
+				var sHour = parseInt(dateSQL.slice(11,13))+4;
 				var sMinute = parseInt(dateSQL.slice(14,16));
 				
-				return ("le "+sDay+" "+table_month[sMonth]+" "+sYear+", "+sHour+":"+sMinute);
+				return (sDay+" "+table_month[sMonth]+" "+sYear+", "+sHour+":"+sMinute);
 			// var sSec = parseInt(date.slice(17,19));
 			// let deltaYear = now.getFullYear()-sYear;
 			// let deltaMonth = (now.getMonth()+1)-sMonth;
@@ -131,10 +127,72 @@ export default {
 <style lang="scss">
 	.post-container{
 		background-color: #ffdbdb;
-		margin-bottom: 50px;
+		margin-bottom: 70px;
+		// border-radius: 20px;
+		//display: flex;
+		max-width: 80%;
+		margin-left: auto;
+		margin-right: auto;
+		box-shadow: 0 12px 10px 0 #ffebea, 0 12px 10px 0 #fff6f5;
 	}
 	.comment-container{
-		border: 1px solid #ffdbdb;
+		border: 1px, solid, grey;
+	}
+	.post-header, .comment-header{
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: baseline;
+		height: 30px;
+		margin-left: 20px;
+
+	}
+	.post-pseudo-head{
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		gap: 10px;
+	}
+	.comment-pseudo-head{
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.post-pseudo, .comment-pseudo{
+		color:#fc1c00;
+	}
+	.post-date, .comment-date{
+		font-size: smaller;
+		color:  grayscale($color: #00000087);
+		margin-right: 20px;
+	}
+	.post-content{
 		background-color: #ffffff;
+		border: solid, 1px;
+		min-height: 50px;
+		p{
+			padding-top:15px;
+		}
+	}
+	.comment-container{
+		border-bottom: 2px solid #ffdbdb;
+		background-color: #ffffff;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		padding: 5px;
+	}
+	.post-actions{
+		background-color: #ffffff;
+		border-bottom: 2px solid #ffdbdb;
+
+	}
+	.btn-liked{
+		background-color: #fc1c00;
+		color: #ffffff;
+		&:hover{
+			background-color: #fc1c00;
+		color: #ffffff;
+		}
 	}
 </style>

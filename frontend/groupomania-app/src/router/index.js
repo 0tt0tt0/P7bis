@@ -1,9 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import RegisterView from '../views/RegisterView.vue'
-import LoginView from '../views/LoginView.vue'
+import RegisterBox from '@/components/RegisterBox.vue'
+import LoginBox from '@/components/LoginBox.vue'
 import AuthView from '../views/AuthView.vue'
 import ForumView from '../views/ForumView.vue'
-import UserUpdate from '@/components/UserUpdate.vue'
+import UserView from '../views/UserView.vue'
 
 const routes = [
   {
@@ -35,7 +35,7 @@ const routes = [
     children:[{
       path: 'register',
       name: 'register',
-      component: RegisterView,
+      component: RegisterBox,
       meta: {
         title: "S'enregistrer",
       }
@@ -43,7 +43,7 @@ const routes = [
     {
       path: 'login',
       name: 'login',
-      component: LoginView,
+      component: LoginBox,
       meta: {
         title: "Se connecter",
       }
@@ -53,7 +53,7 @@ const routes = [
   {
     path: '/user',
     name: 'user',
-    component: UserUpdate,
+    component: UserView,
     meta: {
       title: "Profil",
     }

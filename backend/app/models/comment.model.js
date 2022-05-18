@@ -16,7 +16,7 @@ Comment.create = (newComment, result) => {
       return;
     }
     console.log(res.insertId);
-    sql.query("SELECT * FROM comments as c inner join users as u ON c.comment_user_id = u.id_user WHERE idcomment = ? ", res.insertId , (err,res)=>{
+    sql.query("SELECT c.*,u.pseudo FROM comments as c inner join users as u ON c.comment_user_id = u.id_user WHERE idcomment = ? ", res.insertId , (err,res)=>{
       if (err) {
         console.log("error: ", err);
         result(null, err);
@@ -72,7 +72,7 @@ Comment.getAll = result => {
 //   );
 // };
 Comment.remove = (id, result) => {
-  sql.query("DELETE FROM comments WHERE id_comment = ?", id, (err, res) => {
+  sql.query("DELETE FROM comments WHERE idcomment = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

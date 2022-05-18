@@ -12,26 +12,42 @@ dotenv.config();
 //     expiresIn: maxAge
 //   })
 // };
-
+function isValid(value) {
+  return /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/.test(value);
+}
+//Check Admin password
+exports.checkAdmin = (req, res) => {
+  if(req.body.admin_password !== process.env.MDP_ADMIN){
+    res.status(400).send({
+      message: "Le mot de passe administrateur est incorrect" 
+    });
+  }
+  res.status(200).json({
+    check_admin: 1,
+    message: "Vous êtes administrateur"
+  }) 
+}
 // Create and Save a new User
 exports.register = (req, res) => {
+  let passwordTest = isValid(req.body.password);
     // Validate request
-    // if (!req.body.pseudo) {
-    //   res.status(400).send({
-    //     message: "Le pseudo ne peut être nul" 
-    //   });
-    //   return;
-    // } else if (!req.body.email) {
-    //     res.status(400).send({
-    //       message: "L'email ne peut être nul"
-    //     });
-    //     return 0;
-    //     }else if (req.body.password.length < 8) {
-    //         res.status(400).send({
-    //           message: "Le mot de passe doit contenir au moins 8 caractères!"
-    //         });
-    //         return 0;
-    //     }
+  if (!req.body.pseudo) {
+    res.status(400).send({
+      message: "Le pseudo ne peut être nul" 
+    });
+    return;
+  } else if (!req.body.email) {
+      res.status(400).send({
+        message: "L'email ne peut être nul"
+      });
+      return 0;
+      }else if (!passwordTest) {
+          res.status(400).send({
+            message: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre !"
+          });
+          return 0;
+      }
+  console.log(req.body.admin);
   bcrypt.hash(req.body.password, 10)
   .then(hash => {
     const user = new User({
@@ -44,8 +60,7 @@ exports.register = (req, res) => {
     User.signUp(user, (err, resultat) => {
       if (err) {
         res.status(500).send({
-        message:
-          err.message || "Une erreur a eu lieu pendant la création de l'utilisateur."
+        message: "L'email existe déja."
         });
       }
       const id_user = resultat.id_user;
@@ -57,6 +72,7 @@ exports.register = (req, res) => {
       res.status(200).json({
         id_user: id_user,
         token: token,
+        admin: resultat.admin,
       });
   });
 })
@@ -65,17 +81,18 @@ exports.register = (req, res) => {
 exports.login = async (req, result) => {
   const { email, password } = req.body;
   User.signIn(email, (err, res) => {
-    if (err) {
+    if (res == null) {
       console.log("error: ", err);
       result.status(400).send({
-        message: "Veuillez-réessayer" 
+        message: "L'email n'existe pas." 
       });
       return;
     }
+    console.log(res);
     bcrypt.compare(password, res.hash)
       .then(valid => {
         if (!valid) {
-          return result.status(401).json({ error: 'Mot de passe incorrect !' });
+          return result.status(401).json({ message: 'Mot de passe incorrect !' });
         }
         console.log("Utilisateur trouvé: ", res.id_user);
         const id_user = res.id_user;

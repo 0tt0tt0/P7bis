@@ -1,6 +1,6 @@
 <template>
-  <a href="/"><img alt="Vue logo" src="./assets/Groupomania_Logos/icon-above-font.png"></a>
   <div>
+    
     <router-view/>
   </div>
 </template>
@@ -27,19 +27,22 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
 img {
-  height: 200px;
+  height: 400px;
 }
 h1{
   margin-bottom: 50px;
 }
 button {
+  font-size: small;
   font-weight: bold;
   background-color: #ffffff;
   color: #fc1c00;
   padding: 10px;
   margin: 10px;
   border-radius: 15px;
+  border-color: #ffffff;
   &:hover{
         background-color: #ffffff;
         color: #fc1c00;
@@ -48,12 +51,21 @@ button {
 }
 form{
   input{
+  text-align: center;
   font-weight: bold;
   background-color: #ffffff;
   padding: 10px;
   margin: 10px;
   border-radius: 15px;
   border-color: #fed7d6;
+  border-width: 2px;
+  &:hover{
+    border-color: #fc1c00;
+  }
+  &:active{
+    color: white;
+    background-color: #fc1c00;
+  }
   }
 }
 
@@ -74,4 +86,13 @@ form{
   }
   }
 }
+.nav{
+  background-color: #fc1c00;
+  display: flex;
+  flex-direction: row;
+}
+.text-orange{
+  color: #fc1c00;
+}
+
 </style>

@@ -1,14 +1,13 @@
 <template>
 	<h2> Veuillez-vous connecter : </h2>
 	<form @submit="onSubmit">
-		<p>
-			<label for= "email"> E-mail : </label> <input type= "email" id= "email" v-model= "email" />
-			<label for= "password"> Mot de passe : </label> <input type= "password" id= "password" minlength="8" v-model="password" />
+		<p id="form-container">
+			<span id="email"><label for= "email" class="item"> E-mail : </label> <input type= "email" class= "item email-item" v-model= "email" autofocus/></span>
+			<span id="password"><label for= "password"> Mot de passe : </label> <input type= "password" class= "item password-item" minlength="8" v-model="password" /></span>
 			<input class="btn-submit" type="submit" value="Se connecter">
 		</p>
 	</form>
-	<p v-if="resmessage!==''"> Veuillez-réessayer</p>
-	<!--<Alert :status="statusAlert" :message="messageAlert" :show="showAlert" />-->
+	<p id="alert" v-if="showAlert">{{messageAlert}}</p>
 	<div class="register">
 		<p> Pas de compte ? Enregistrez-vous !</p>
 		<router-link to="/auth/register">S'enregistrer</router-link>
@@ -21,13 +20,8 @@ import { mapState } from 'vuex'
 
 export default {
 	name: 'LoginBox',
-	props: {
-		msg:String,
-	},
-	components:{
-	},
 	computed: {
-		...mapState("isAdmin")
+		...mapState("isAdmin", ["isAdmin"])
 	},
 	data(){
 		return{
@@ -38,7 +32,7 @@ export default {
 			email: '',
 			password: '',
 			form: { },
-			resmessage: '',
+			messageAlert: '',
 		}
 	},
 	methods:{
@@ -47,28 +41,50 @@ export default {
 			axios
 				.post('http://localhost:8080/api/users/login', {email : this.email, password :this.password})
 				.then(res => {
-				this.resmessage = res.message;
 				console.log(res.data);
 				//création d'un petit localStorage pour garder le token
 					if (res.data.isAdmin == 1){
-						this.$store.commit('ADMIN_POWER');
+						this.$store.state.isAdmin = true;
 						console.log(this.$store.state.isAdmin)
 					}
 					localStorage.setItem('token', res.data.token);
-					localStorage.setItem('userId', res.data.id_user);
 					this.$router.push('/forum');
 				})
-				//.catch(() => this.msgAlert(true, "Votre mot de passe ou identifiants sont incorrects.", "danger"));
+				.catch (error =>{this.showAlert = true, console.log(error.response.data.message), this.messageAlert=error.response.data.message})
 			},
 	}
 }
 </script>
 
 <style>
+	#form-container{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+	#email{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	#password{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	.btn-submit{
+		max-width: 200px
+	}
 	img{
 		height: 100px;
 	}
 	input {
 		border : solid 1px black;
+	}
+	#alert{
+		color: red;
 	}
 </style>

@@ -1,4 +1,5 @@
 const User = require("../models/user.model.js");
+const jwt = require('jsonwebtoken');
 // Create and Save a new User
 exports.create = (req, res) => {
   // Validate request
@@ -37,15 +38,18 @@ exports.findAll = (req, res) => {
 };
 // Find a single User with a id
 exports.findOne = (req, res) => {
-    User.findById(req.params.id, (err, data) => {
+  token = req.params.token;
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const id = decodedToken.id_user;
+    User.findById(id, (err, data) => {
         if (err) {
           if (err.kind === "not_found") {
             res.status(404).send({
-              message: `Utilisateur non trouvé avec l'id ${req.params.id}.`
+              message: `Utilisateur non trouvé avec l'id ${id}.`
             });
           } else {
             res.status(500).send({
-              message: "Erreur pour l'id " + req.params.id
+              message: "Erreur pour l'id " + id
             });
           }
         } else res.send(data);

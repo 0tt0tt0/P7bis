@@ -1,16 +1,14 @@
 const Like = require("../models/like.model.js");
-// Create and Save a new User
+const jwt = require('jsonwebtoken');
+
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Le contenu ne peut être nul"
-    });
-  }
   // Create a like
+  token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const userId = decodedToken.id_user;
   const like = new Like({
     like_post_id: req.params.like_post_id,
-    like_user_id: req.params.like_user_id,  
+    like_user_id: userId,  
   });
   // Save like in the database
 Like.create(like, (err, data) => {
@@ -46,7 +44,10 @@ exports.countbyPostId = (req, res) => {
 };
 // Find like with User and Post id
 exports.getLikesByUserPostId = (req, res) => {
-  Like.GetById(req.params.post_id, req.params.user_id, (err, data) => {
+  token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const userId = decodedToken.id_user;
+  Like.GetById(req.params.post_id, userId, (err, data) => {
       if (err) {
         res.status(500).send({
             message: "Erreur pour l'id " + req.body.id
@@ -84,7 +85,10 @@ exports.update = (req, res) => {
 };
 // Delete a like with the specified id in the request
 exports.delete = (req, res) => {
-  Like.remove(req.params.like_post_id, req.params.like_user_id, (err, data) => {
+  token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const userId = decodedToken.id_user;
+  Like.remove(req.params.like_post_id, userId, (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({

@@ -29,7 +29,7 @@ Post.create = (newPost, result) => {
 };
 
 Post.getAllPublished = result => {
-  sql.query("SELECT * FROM posts as p inner join users as u ON p.post_user_id = u.id_user ORDER BY p.post_datetime DESC", (err, res) => {
+  sql.query("SELECT p.*,u.pseudo FROM posts as p inner join users as u ON p.post_user_id = u.id_user ORDER BY p.post_datetime DESC", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

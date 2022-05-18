@@ -11,13 +11,12 @@ exports.create = (req, res) => {
     });
   }
   // Create a Post
-  var date = Date.now();
+  var date = Date.now()+14400000;;
   var post_datetime = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
-  token = req.body.token;
+  token = req.headers.authorization.split(' ')[1];
   console.log(post_datetime);
   const decodedToken = jwt.verify(token, process.env.SECRET);
   const userId = decodedToken.id_user;
-  console.log(userId);
   const post = new Post({
     post_content: req.body.post_content,
     post_datetime : post_datetime,

@@ -13,7 +13,7 @@ Like.create = (newLike, result) => {
       return;
     }
     console.log("like créé: ", { id: res.insertId, ...newLike });
-    result(null, { id: res.insertId, ...newLike });
+    result(null, { id: res.insertId});
   });
 };
 Like.CountById = (post_id, result) => {

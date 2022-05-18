@@ -24,8 +24,9 @@ User.signIn = async (email, result) => {
       result(err, null);
       return;
     }
-    else if(!res.length){
-      result(err, null);
+    else if(res.length ==0){
+      console.log(res.length);
+      result(err, err);
       return;
     }
     console.log(res); 
@@ -45,7 +46,7 @@ User.signIn = async (email, result) => {
   });
 };*/
 User.findById = (id, result) => {
-  sql.query(`SELECT * FROM users WHERE id_user = ${id}`, (err, res) => {
+  sql.query(`SELECT users.pseudo, users.email, users.admin FROM users WHERE id_user = ${id}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -68,8 +69,8 @@ User.getAll = result => {
       result(null, err);
       return;
     }
-    console.log("Utilisateurs : ", res);
     result(null, res);
+    console.log(res);
   });
 };
 User.updateById = (id, user, result) => {

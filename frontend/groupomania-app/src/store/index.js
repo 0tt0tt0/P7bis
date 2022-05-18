@@ -5,17 +5,18 @@ const now = VuexNow(1000)
 
 export default createStore({
   state: {
-    isAdmin: false,
+    // isAdmin: false,
+    // type: Object,
   },
   getters: {
   },
   mutations: {
-    ADMIN_POWER(state){
-      state.isAdmin=true;
-    },
-    ADMIN_STOP(state){
-      state.isAdmin=false;
-    }
+    // ADMIN_POWER(state){
+    //   state.isAdmin=true;
+    // },
+    // ADMIN_STOP(state){
+    //   state.isAdmin=false;
+    // }
   },
   actions: {
   },

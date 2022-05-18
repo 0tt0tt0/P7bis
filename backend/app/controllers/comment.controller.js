@@ -1,4 +1,5 @@
 const Comment = require("../models/comment.model.js");
+const jwt = require('jsonwebtoken');
 // Create and Save a new User
 exports.create = (req, res) => {
   // Validate request
@@ -11,11 +12,14 @@ exports.create = (req, res) => {
   // Create a comment
   var datenow = Date.now()+14400000;
   var comment_datetime = new Date(datenow).toISOString().slice(0, 19).replace('T', ' ');
+  token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const userId = decodedToken.id_user;
   const comment = new Comment({
     comment_content: req.body.comment_content,
     comment_datetime : comment_datetime, 
     comment_post_id: req.body.comment_post_id,
-    comment_user_id: req.body.comment_user_id,
+    comment_user_id: userId,
   });
   // Save comment in the database
   Comment.create(comment, (err, data) => {

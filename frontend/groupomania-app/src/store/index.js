@@ -1,26 +1,20 @@
 import { createStore } from 'vuex'
-import VuexNow from 'vuex-now'
 
-const now = VuexNow(1000)
 
 export default createStore({
   state: {
-    // isAdmin: false,
-    // type: Object,
+    user: {},
+    type: Object,
   },
   getters: {
   },
-  mutations: {
-    // ADMIN_POWER(state){
-    //   state.isAdmin=true;
-    // },
-    // ADMIN_STOP(state){
-    //   state.isAdmin=false;
-    // }
-  },
+  // mutations: {
+  //   SET_USER(state, user){
+  //     state.user = user;
+  //   },
+  // },
   actions: {
   },
   modules: {
   },
-  plugins: [now],
 })

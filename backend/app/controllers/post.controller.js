@@ -14,7 +14,6 @@ exports.create = (req, res) => {
   var date = Date.now()+14400000;;
   var post_datetime = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
   token = req.headers.authorization.split(' ')[1];
-  console.log(post_datetime);
   const decodedToken = jwt.verify(token, process.env.SECRET);
   const userId = decodedToken.id_user;
   const post = new Post({
@@ -23,7 +22,6 @@ exports.create = (req, res) => {
     post_user_id : userId,
     post_dateVue : req.body.dateVue,
     //imageUrl : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    //user_id : userId,
   });
   // Save Post in the database
   Post.create(post, (err, data) => {
@@ -34,8 +32,6 @@ exports.create = (req, res) => {
           err.message || "Une erreur a eu lieu pendant la création du post."
       });
     else {
-      console.log("ICI");
-      console.log(data);
       res.send(data);
     }
   });
@@ -51,19 +47,9 @@ exports.findAllPublished = (req, res) => {
     else res.send(data);
   });
 };
-// Update a Post identified by the id in the request
-exports.update = (req, res) => {
-  // Validate Request
-  if (!req.body) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-  }
-  console.log(req.body);
-  Post.updateById(
-    req.params.id,
-    new Post(req.body),
-    (err, data) => {
+// Delete a Post with the specified id in the request
+exports.delete = (req, res) => {
+  Post.remove(req.params.id, (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
@@ -71,37 +57,52 @@ exports.update = (req, res) => {
           });
         } else {
           res.status(500).send({
-            message: "Error updating Post with id " + req.params.id
+            message: "Could not delete Post with id " + req.params.id
           });
         }
-      } else res.send(data);
-    }
-  );
+      } else res.send({ message: `Post was deleted successfully!` });
+    });
 };
-// Delete a Post with the specified id in the request
-exports.delete = (req, res) => {
-    Post.remove(req.params.id, (err, data) => {
-        if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({
-              message: `Not found Post with id ${req.params.id}.`
-            });
-          } else {
-            res.status(500).send({
-              message: "Could not delete Post with id " + req.params.id
-            });
-          }
-        } else res.send({ message: `Post was deleted successfully!` });
-      });
-};
-// Delete all Posts from the database.
-exports.deleteAll = (req, res) => {
-    Post.removeAll((err, data) => {
-        if (err)
-          res.status(500).send({
-            message:
-              err.message || "Some error occurred while removing all Posts."
-          });
-        else res.send({ message: `All Posts were deleted successfully!` });
-      });
-};
+
+//POSSIBLE IMPROVES
+
+// // Update a Post identified by the id in the request
+
+// exports.update = (req, res) => {
+//   // Validate Request
+//   if (!req.body) {
+//     res.status(400).send({
+//       message: "Content can not be empty!"
+//     });
+//   }
+//   console.log(req.body);
+//   Post.updateById(
+//     req.params.id,
+//     new Post(req.body),
+//     (err, data) => {
+//       if (err) {
+//         if (err.kind === "not_found") {
+//           res.status(404).send({
+//             message: `Not found Post with id ${req.params.id}.`
+//           });
+//         } else {
+//           res.status(500).send({
+//             message: "Error updating Post with id " + req.params.id
+//           });
+//         }
+//       } else res.send(data);
+//     }
+//   );
+// };
+// // Delete all Posts from the database.
+
+// exports.deleteAll = (req, res) => {
+//     Post.removeAll((err, data) => {
+//         if (err)
+//           res.status(500).send({
+//             message:
+//               err.message || "Some error occurred while removing all Posts."
+//           });
+//         else res.send({ message: `All Posts were deleted successfully!` });
+//       });
+// };

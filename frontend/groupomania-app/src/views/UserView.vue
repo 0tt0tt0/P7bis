@@ -1,77 +1,177 @@
 <template>
     <NavLink/>
     <div id="profile-card">
-    <b-icon-person-circle id="profile-pic"/>
-	<h2>{{this.user.pseudo}}</h2>
-    <p>{{this.user.email}}</p>
-    <button v-if="this.user.admin==0" @click="DeleteAccount" class="btn-logout">Supprimer mon compte</button>
-    <p v-else class="text-orange">ADMINISTRATEUR</p>
+        <b-icon-person-circle id="profile-pic"/>
+        <h2>{{this.$store.state.user.pseudo}}</h2>
+        <p>{{this.$store.state.user.email}}</p>
+        <p v-if="this.$store.state.user.admin==1" class="text-orange">ADMINISTRATEUR</p>
+        <button @click="ShowUpdate" class="btn-show-update">Modifier mon profil</button>
+        <button  @click="DeleteAccount" class="btn-logout">Supprimer mon compte</button>
     </div>
-    <!--<div v-if="showUserForm">
-        <form @submit="UpdateAccount">
-            <label for= "pseudo"> Pseudo : </label> <input type= "pseudo" id= "pseudo" v-model= "pseudo" />
-            <label for= "password"> Mot de passe : </label> <input type= "password" id= "password" v-model="password" />
-            <input class="btn-submit" type="submit" value="Modifier mes informations">
-        </form>
-    </div>-->
+    <div v-if="update_profile" class="container">
+        <button  @click="ShowUpdatePseudo" class="btn-update">Modifier mon pseudo</button>
+        <button @click="ShowUpdatePassword" class="btn-update">Modifier mon mot de passe</button>
+    </div>
+    <div class="container">
+        <div v-if="showPseudoForm">
+            <form @submit="UpdatePseudo">
+                <label for= "pseudo"> Nouveau pseudo : </label> <input type= "new_pseudo" id= "new_pseudo" v-model= "new_pseudo" />
+                <input class="btn-submit" type="submit" value="Envoyer">
+            </form>
+        </div>
+        <div v-if="showPasswordForm">
+            <form class="form-container" v-if="to_check_password" @submit="CheckPassword">
+                <span><label for= "old_password"> Mot de passe actuel : </label> <input type= "password" id= "old_password" v-model= "old_password" />
+                <button type="button" class="password_eye" @click="showPassword('old_password')"><b-icon-eye-fill/></button>
+                <input class="btn-submit" type="submit" value="Vérifier" >
+                </span>
+            </form>
+            <form class="form-container" v-if="password_ok" @submit="UpdatePassword">
+                <label for= "new_password"> Nouveau mot de passe : </label> <input type= "password" id= "new_password" v-model= "new_password" />
+                <button type="button" class="password_eye" @click="showPassword('new_password')"><b-icon-eye-fill/></button>
+                <label for= "confirm_password"> Confirmer le mot de passe : </label> <input type= "password" id= "confirm_password" v-model="confirm_password" />
+                <input class="btn-submit" type="submit" value="Envoyer">
+            </form>
+        </div>
+        <p class="alert" v-if="showAlert">{{messageAlert}}</p>
+    </div>
 </template>
 
 <script>
 import axios from 'axios'
-// import { mapState } from 'vuex'
+import { mapState } from 'vuex'
 import NavLink from '@/components/NavLink.vue';
 
 export default {
-    name: "UserUpdate",
-    // computed: {
-    //     ...mapState("isAdmin", ["isAdmin"]),
-    // },
+    data(){
+        return{
+            new_pseudo: '',
+            old_password: '',
+            new_password: '',
+            confirm_password: '',
+            showPseudoForm: false,
+            showPasswordForm: false,
+            id: "",
+            showUserForm: false,
+            token :localStorage.getItem("token"),
+            password_ok: false,
+            to_check_password: false,
+            messageAlert: '',
+            showAlert: false, 
+            update_profile: false,
+
+        }
+    },
+    computed: {
+        ...mapState(["user"]),
+    },
     methods: {
-        DeleteAccount(id) {
-            confirm("Etes vous sûr de vouloir supprimer ce compte ? Cette action est définitive.");
-            id = localStorage.getItem("userId");
-            axios
-                .delete("http://localhost:8080/api/users/" + id, id);
+        showPassword(elementId){ 
+            var input = document.getElementById(elementId); 
+            if (input.type === "password")
+            { 
+            input.type = "text"; 
+            } 
+            else
+            { 
+            input.type = "password"; 
+            } 
+        }, 
+        DeleteAccount() {
+            if(confirm("Etes vous sûr de vouloir supprimer ce compte ? Cette action est définitive.")){
+                axios
+                    .delete("http://localhost:8080/api/users/", {headers:{"Authorization": "Bearer "+this.token}});
             localStorage.clear();
             this.$router.push("/auth/register");
+            }
         },
         Redirect() {
             this.$router.push("/forum");
         },
-        // UpdateAccount(id){
-        //     id = localStorage.getItem('userId');
-        //     axios
-        //     .put('http://localhost:8080/api/users/'+id, id);
-        //     console.log("Utilisateur mis à jour")
-        // },
-        //  ModifyPassword(id) {
-        //     //id = localStorage.getItem('userId');
-        //     axios
-        //     .update('http://localhost:8080/api/users/'+id, id)
-        //     localStorage.clear();
-        //     this.$router.push('/auth/login')
-        // },
-    },
-    data() {
-        return {
-            id: "",
-            user: [],
-            showUserForm: false,
-        };
+        ShowUpdate(){
+            this.update_profile= !this.update_profile;
+            this.showAlert = false; 
+        },
+        ShowUpdatePseudo(){
+            this.showAlert = false; 
+            this.showPseudoForm = !this.showPseudoForm;
+            this.showPasswordForm = false;
+        },
+        ShowUpdatePassword(){
+            this.showAlert = false; 
+            this.showPasswordForm = !this.showPasswordForm;
+            this.showPseudoForm = false;
+            this.to_check_password = true;
+            this.password_ok = false;
+        },
+        UpdatePseudo(){
+            axios
+                .put("http://localhost:8080/api/users/pseudo", {pseudo: this.new_pseudo}, {headers:{"Authorization": "Bearer "+this.token}})
+                .then (res=>{
+                this.$store.state.user.pseudo = res.data.pseudo;
+                this.showPseudoForm = false;
+                this.messageAlert="Pseudo mis à jour !";
+                this.showAlert = true;   
+                this.new_pseudo='';
+                })
+                .catch (error =>{this.showAlert = true, console.log(error.response.data.message), this.messageAlert=error.response.data.message})
+        },
+        CheckPassword(){
+            axios
+				.post('http://localhost:8080/api/users/login', {email : this.$store.state.user.email, password :this.old_password})
+				.then(res => {
+                    console.log(res);
+                    this.password_ok = true;
+                    this.to_check_password = false;
+                    this.old_password= '';
+                    this.showAlert= false;
+                })
+                .catch(err=>{
+                    console.log(err);
+                    this.showAlert = true;
+                    this.password_ok=false;
+                    this.messageAlert="Mot de passe incorrect";
+                    this.old_password = "";
+                });
+        },
+        UpdatePassword(){
+            if(this.new_password == this.confirm_password){
+                axios
+                    .put("http://localhost:8080/api/users/password", {password : this.new_password}, {headers:{"Authorization": "Bearer "+this.token}})
+                    .then (res=>{
+                    console.log(res);
+                    this.showPasswordForm = false;
+                    this.messageAlert="Mot de passe mis à jour !";
+                    this.showAlert = true;   
+                    this.new_password='';
+                    this.confirm_password= '';
+                    this.password_ok= false;
+
+                    })
+                    .catch (error =>{this.showAlert = true, console.log(error.response.data.message), this.messageAlert=error.response.data.message})
+            }
+            this.messageAlert="Les mots de passes ne correspondent pas, veuillez-réessayer";
+            this.showAlert = true;     
+        }
+             
     },
     beforeCreate() {
         this.token = localStorage.getItem("token");
-        axios
-            .get('http://localhost:8080/api/users/'+this.token, {headers:{"Authorization": "Bearer "+this.token}})
-            .then (res=>{
-                this.user = res.data;
-            })
+        axios 
+			.get('http://localhost:8080/api/users/one', {headers:{"Authorization": "Bearer "+this.token}})
+			.then (res=>{
+				this.$store.state.user = res.data;
+			});
     },
     components: { NavLink }
 }
 </script>
 
 <style lang="scss">
+    .btn_update{
+        color: #fc1c00;
+        background-color: #ffffff;
+    }
     #profile-card{
         display:flex;
         flex-direction: column;

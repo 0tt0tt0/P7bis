@@ -1,10 +1,11 @@
 <template>
+	
 	<div id="forum-header">
 		<NavLink/>
-		<span id="bonjour"><h2> Bonjour,</h2><h2 id="user-pseudo">{{user.pseudo}} </h2></span>
+		<span id="bonjour"><h2> Bonjour,</h2><h2 class="text-orange">{{this.$store.state.user.pseudo}} </h2></span>
 	</div>
-	<form @submit="newPost()" id="newPost">
-		<label class="post-title" for= "content"> Postez quelquechose   <b-icon-chat-dots-fill /> </label><textarea  maxlength="400" rows="6" cols="30" wrap="hard" v-model="postcontent" placeholder="Ecrivez ici ..." />
+	<form @submit="newPost" id="newPost">
+		<label class="post-title" for= "content"> Postez quelquechose   <b-icon-chat-dots-fill /> </label><textarea  required="required" maxlength="400" minlength="4" rows="6" cols="30" wrap="hard" v-model="postcontent" placeholder="Ecrivez ici ..." ></textarea>
 		<!--<input type="file" accept="image/png, image/jpeg" v-on:="imageUrl" Parcourir.../>-->
 		<p class="text-orange">{{this.postcontent.length}} / 400</p>
 		<div id="btn-form">
@@ -16,7 +17,6 @@
 		<OnePost v-for="post in posts"
 			v-bind:key="post.id_post"
 			v-bind:post="post"
-			v-bind:user="user"
 			v-bind:comments="comments"
 			v-on:deletePost="deletePost"
 			v-on:deleteComment="deleteComment"
@@ -24,7 +24,7 @@
 			v-on:removeLike="removeLike"
 			v-on:newComment="newComment"
 		></OnePost>	
-	<!--<Alert :status="statusAlert" :message="messageAlert" :show="showAlert" />-->
+	<button id="goUpForum" type=" button" @click="goUp"><b-icon-arrow-up-circle-fill /></button>
 	</div>
 </template>
 
@@ -33,6 +33,7 @@ import OnePost from '@/components/OnePost.vue'
 import NavLink from '@/components/NavLink.vue'
 import axios from 'axios'
 
+
 import { mapState } from 'vuex'
 
 export default {
@@ -40,25 +41,27 @@ export default {
 	components:{
     OnePost,
     NavLink,
+
 },
 	data(){
 		return{
 			posts: [],
-			user_id: '',
 			likes: [],
 			comments:[],
 			postcontent: '',
 			token: '',
-			user: [],
 		}
 	},
 	computed: {
-		...mapState('now', ['now']),
+		...mapState(['user'],),
 	},
 	methods:{
+		goUp(){
+			window.scrollTo(0, 0);
+		},
 		newPost() {
 			axios
-				.post('http://localhost:8080/api/posts/create', {post_content : this.postcontent, dateVue: this.now}, {headers:{"Authorization": "Bearer "+this.token}})
+				.post('http://localhost:8080/api/posts/create', {post_content : this.postcontent, dateVue: "today"}, {headers:{"Authorization": "Bearer "+this.token}})
 				.then(res=>{
 					let newpost = res.data[0];
 					newpost.comment_count = 0;
@@ -114,29 +117,28 @@ export default {
 					}
 				});
 		},
-		deleteComment(id, post_id){
-			console.log(id);
+		deleteComment(id){
 			axios
 				.delete('http://localhost:8080/api/comments/'+id, {headers:{"Authorization": "Bearer "+this.token}})
 				.then(res=>{
 					if(res){
-						let commentToRemove = this.comments.find(comment => comment.id_comment === id);
-						let indexCommentToDelete = this.posts.indexOf(commentToRemove);
-						this.comments.splice(indexCommentToDelete, 1);
-						let postToUpdate = this.posts.find(post => post.id_post == post_id);
+						let commentToRemove = this.comments.find(comment => comment.idcomment === id);
+						let postToUpdate = this.posts.find(post => post.id_post == commentToRemove.comment_post_id);
 						postToUpdate.comment_count = --postToUpdate.comment_count;
+						let indexCommentToDelete = this.comments.indexOf(commentToRemove);
+						this.comments.splice(indexCommentToDelete, 1);
+						
 					}
 				});
 		}
 	},
 	mounted(){
 		this.token = localStorage.getItem("token");
-        axios
-				.get('http://localhost:8080/api/users/'+this.token, {headers:{"Authorization": "Bearer "+this.token}})
-                .then (res=>{
-                    this.user = res.data;
-                })
-		
+		axios 
+			.get('http://localhost:8080/api/users/one', {headers:{"Authorization": "Bearer "+this.token}})
+			.then (res=>{
+				this.$store.state.user = res.data;
+			});
 		axios 
 			.get('http://localhost:8080/api/likes/', {headers:{"Authorization": "Bearer "+this.token}})
 			.then (res=>{
@@ -157,28 +159,22 @@ export default {
 					post.comment_count = 0;
 					post.alreadyLiked = false;
 
-				
-				/**/let user_id = localStorage.getItem("userId");
-
 					this.likes.forEach(like=>{
 						if(like.like_post_id==post.id_post){
-							post.like_count= ++post.like_count;
-						}
-				
-					this.likes.forEach(like=>{		
-						if(like.like_post_id==post.id_post && like.like_user_id == user_id){
+							post.like_count +=1;
+							if(like.like_user_id == this.$store.state.user.id_user){
 							post.alreadyLiked = true;
 						}
+						}
 					});
-				});
 			
 					this.comments.forEach(comment=>{
 						if(comment.comment_post_id==post.id_post){
-							post.comment_count= ++post.comment_count;
+							post.comment_count+=1;
 						}			
-				});
-				console.log(preposts);
-				this.posts = preposts;	
+					});
+					console.log(preposts);
+					this.posts = preposts;	
 				});
 			})		
 	}	
@@ -186,8 +182,24 @@ export default {
 </script>
 
 <style lang="scss">
-	input {
-		border : solid 1px black;
+
+	#bonjour{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+		animation: 1500ms 0s getin;
+		animation-fill-mode: backwards;
+    }
+	@keyframes getin{
+		from{
+			opacity:0;
+			transform: translateX(100px);
+		}
+		to{
+			opacity:1;
+			transform: translateX(0px);
+		}
 	}
 	textarea{
 		border-radius: 10px;
@@ -205,12 +217,13 @@ export default {
 		margin-top: 40px;
 		margin-bottom: 40px;
 		box-shadow: 0 12px 10px 0 #ffebea, 0 12px 10px 0 #fff6f5;
-		max-width: 50%;
+		max-width: 60%;
 		margin-left: auto;
 		margin-right: auto;
 		margin-top: 10px;
 		margin-bottom: 40px;
-		overflow: hidden;
+		z-index:0;
+		overflow: hidden;	
 		& > p{
 			margin-top: 0px;
 			margin-bottom: 0px;
@@ -218,38 +231,21 @@ export default {
 			font-weight: bold;
 		}	
 	}
-	
+	#goUpForum{
+		border-radius:100%;
+		padding:10px;
+	}
 	#btn-form{
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
 	}
-
 	.post-title{
 		font-weight: bold;
 		color: white;
 		background-color: #fc1c00;
 		padding: 10px;
-
-	}
-	#bonjour{
-		animation: 1500ms 0s getin;
-		animation-fill-mode: backwards;
-		/* color:#fc1c00; */
-	}
-	#user-pseudo{
-		color:#fc1c00;
 	}
 	
-	@keyframes getin{
-		from{
-			opacity:0;
-			transform: translateX(100px);
-		}
-		to{
-			opacity:1;
-			transform: translateX(0px);
-		}
-	}
 
 </style>

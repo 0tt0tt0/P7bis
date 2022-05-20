@@ -15,7 +15,6 @@ Post.create = (newPost, result) => {
       result(err, null);
       return;
     }
-    console.log(res.insertId);
     sql.query("SELECT * FROM posts as p inner join users as u ON p.post_user_id = u.id_user WHERE id_post= ? ORDER BY p.post_datetime DESC", res.insertId , (err,res)=>{
       if (err) {
         console.log("error: ", err);
@@ -29,7 +28,7 @@ Post.create = (newPost, result) => {
 };
 
 Post.getAllPublished = result => {
-  sql.query("SELECT p.*,u.pseudo FROM posts as p inner join users as u ON p.post_user_id = u.id_user ORDER BY p.post_datetime DESC", (err, res) => {
+  sql.query("SELECT p.*,u.pseudo,u.id_user FROM posts as p inner join users as u ON p.post_user_id = u.id_user ORDER BY p.post_datetime DESC", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -37,26 +36,6 @@ Post.getAllPublished = result => {
     }
     result(null, res);
   });
-};
-Post.updateById = (id, post, result) => {
-  sql.query(
-    "UPDATE posts SET content = ?, imageUrl = ? WHERE id = ?",
-    [post.content, post.imageUrl, id],
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(null, err);
-        return;
-      }
-      if (res.affectedRows == 0) {
-        // Post introuvable avec l'id
-        result({ kind: "not_found" }, null);
-        return;
-      }
-      console.log("updated post: ", { id: id, ...post });
-      result(null, { id: id, ...post });
-    }
-  );
 };
 Post.remove = (id, result) => {
   sql.query("DELETE FROM posts WHERE id_post = ?", id, (err, res) => {
@@ -74,15 +53,38 @@ Post.remove = (id, result) => {
     result(null, res);
   });
 };
-Post.removeAll = result => {
-  sql.query("DELETE FROM posts", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
-    console.log(`deleted ${res.affectedRows} posts`);
-    result(null, res);
-  });
-};
+
+//POSSIBLE IMPROVES
+
+// Post.updateById = (id, post, result) => {
+//   sql.query(
+//     "UPDATE posts SET content = ?, imageUrl = ? WHERE id = ?",
+//     [post.content, post.imageUrl, id],
+//     (err, res) => {
+//       if (err) {
+//         console.log("error: ", err);
+//         result(null, err);
+//         return;
+//       }
+//       if (res.affectedRows == 0) {
+//         // Post introuvable avec l'id
+//         result({ kind: "not_found" }, null);
+//         return;
+//       }
+//       console.log("updated post: ", { id: id, ...post });
+//       result(null, { id: id, ...post });
+//     }
+//   );
+// };
+// Post.removeAll = result => {
+//   sql.query("DELETE FROM posts", (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
+//     console.log(`deleted ${res.affectedRows} posts`);
+//     result(null, res);
+//   });
+// };
 module.exports = Post;

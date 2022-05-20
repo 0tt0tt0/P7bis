@@ -1,9 +1,11 @@
 <template>
 	<h2> Veuillez-vous connecter : </h2>
 	<form @submit="onSubmit">
-		<p id="form-container">
-			<span id="email"><label for= "email" class="item"> E-mail : </label> <input type= "email" class= "item email-item" v-model= "email" autofocus/></span>
-			<span id="password"><label for= "password"> Mot de passe : </label> <input type= "password" class= "item password-item" minlength="8" v-model="password" /></span>
+		<p class="form-container">
+			<span class="form-container"><label for= "email" class="item"> E-mail : </label> <input type= "email" class= "item email-item" v-model= "email" autofocus/></span>
+			<span class="form-container"><label for= "password"> Mot de passe : </label> <input id="login_password" type= "password" class= "item password-item" minlength="8" v-model="password" />
+			<button type="button" class="password_eye" @click="showPassword('login_password')"><b-icon-eye-fill/></button>
+			</span>
 			<input class="btn-submit" type="submit" value="Se connecter">
 		</p>
 	</form>
@@ -21,14 +23,13 @@ import { mapState } from 'vuex'
 export default {
 	name: 'LoginBox',
 	computed: {
-		...mapState("isAdmin", ["isAdmin"])
+		...mapState(["user"])
 	},
 	data(){
 		return{
 			statusAlert: '',
 			showAlert: false, 
 			showForm: true,
-			//myToken: '',
 			email: '',
 			password: '',
 			form: { },
@@ -36,17 +37,23 @@ export default {
 		}
 	},
 	methods:{
+		showPassword(elementId){ 
+            var input = document.getElementById(elementId); 
+            if (input.type === "password")
+            { 
+            input.type = "text"; 
+            } 
+            else
+            { 
+            input.type = "password"; 
+            } 
+        }, 
 		onSubmit() {
-			//event.preventDefault()
 			axios
 				.post('http://localhost:8080/api/users/login', {email : this.email, password :this.password})
 				.then(res => {
-				console.log(res.data);
-				//création d'un petit localStorage pour garder le token
-					if (res.data.isAdmin == 1){
-						this.$store.state.isAdmin = true;
-						console.log(this.$store.state.isAdmin)
-					}
+					let user = {id_user: res.data.id_user, pseudo: res.data.pseudo, email: res.data.email, admin: res.data.isAdmin};
+					this.$store.state.user = user;
 					localStorage.setItem('token', res.data.token);
 					this.$router.push('/forum');
 				})
@@ -57,34 +64,5 @@ export default {
 </script>
 
 <style>
-	#form-container{
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-	#email{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-	#password{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-	.btn-submit{
-		max-width: 200px
-	}
-	img{
-		height: 100px;
-	}
-	input {
-		border : solid 1px black;
-	}
-	#alert{
-		color: red;
-	}
+
 </style>

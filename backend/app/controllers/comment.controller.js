@@ -1,5 +1,6 @@
 const Comment = require("../models/comment.model.js");
 const jwt = require('jsonwebtoken');
+
 // Create and Save a new User
 exports.create = (req, res) => {
   // Validate request
@@ -31,19 +32,6 @@ exports.create = (req, res) => {
     else res.send(data);
   });
 };
-
-//Get all comments for one post
-exports.findOnePostComments = (req, res) => {
-  Comment.getAllPublishedByPostId(req.params.id, (err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Erreur"
-      });
-    else res.send(data);
-  });
-};
-
 //Get all comments
 exports.getAllComments = (req, res) => {
   Comment.getAll ((err, data) => {
@@ -55,6 +43,24 @@ exports.getAllComments = (req, res) => {
     else res.send(data);
   });
 };
+// Delete a comment with the specified id in the request
+exports.delete = (req, res) => {
+  Comment.remove(req.params.id, (err, data) => {
+       if (err) {
+         if (err.kind === "not_found") {
+           res.status(404).send({
+             message: `Not found comment with id ${req.params.id}.`
+           });
+         } else {
+           res.status(500).send({
+             message: "Could not delete comment with id " + req.params.id
+           });
+         }
+       } else res.send({ message: `comment was deleted successfully!` });
+     });
+};
+
+//POSSIBLE IMPROVES
 // // Update a comment identified by the id in the request
 // exports.update = (req, res) => {
 //   // Validate Request
@@ -82,19 +88,3 @@ exports.getAllComments = (req, res) => {
 //     }
 //   );
 // };
-// Delete a comment with the specified id in the request
-exports.delete = (req, res) => {
-   Comment.remove(req.params.id, (err, data) => {
-        if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({
-              message: `Not found comment with id ${req.params.id}.`
-            });
-          } else {
-            res.status(500).send({
-              message: "Could not delete comment with id " + req.params.id
-            });
-          }
-        } else res.send({ message: `comment was deleted successfully!` });
-      });
-};

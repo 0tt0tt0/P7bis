@@ -112,7 +112,7 @@ User.findById = (id, result) => {
   });
 };
 
-//POSSIBLE IMPROVES
+
 // User.getAll = result => {
 //   let query = "SELECT * FROM users";
 //   sql.query(query, (err, res) => {

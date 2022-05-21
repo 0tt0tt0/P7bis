@@ -1,9 +1,8 @@
 
-
 module.exports = {
     HOST: "localhost",
-    USER: process.env.USER,
-    PASSWORD: process.env.PASSWORD,
-    DB: process.env.DB
+    USER: "root",
+    PASSWORD: "Macb00kpr0",
+    DB: "Groupomania"
   };
 

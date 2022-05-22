@@ -2,13 +2,13 @@
 
 #Backend to set up :
 
-cd/backend/
+cd backend/
 npm node install
 node server.js
 
 #Frontend to set up with VueJs (install dependencies...) :
 
-cd/frontend/groupomania-app/
+cd frontend/groupomania-app/
 npm run serve
 
 

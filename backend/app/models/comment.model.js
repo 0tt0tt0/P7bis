@@ -54,25 +54,4 @@ Comment.remove = (id, result) => {
   });
 };
 
-// Comment.updateById = (id, comment, result) => {
-//   sql.query(
-//     "UPDATE comments SET content = ? WHERE id = ?",
-//     [comment.content, id],
-//     (err, res) => {
-//       if (err) {
-//         console.log("error: ", err);
-//         result(null, err);
-//         return;
-//       }
-//       if (res.affectedRows == 0) {
-//         // Commentaire introuvable avec l'id
-//         result({ kind: "not_found" }, null);
-//         return;
-//       }
-//       console.log("Commentaire mis à jour: ", { id: id, ...comment});
-//       result(null, { id: id, ...comment });
-//     }
-//   );
-// };
-
 module.exports = Comment;

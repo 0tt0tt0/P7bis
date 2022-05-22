@@ -7,7 +7,7 @@ function isValid(value) {
   return /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/.test(value);
 }
 
-//AUTH
+
 //Check Admin password
 exports.checkAdmin = (req, res) => {
   if(req.body.admin_password !== process.env.MDP_ADMIN){
@@ -125,9 +125,7 @@ exports.findOne = (req, res) => {
           }
         } else res.send(data);
     });
-  };
-
-//UPDATE AND DELETE
+};
 // Update a User Pseudo identified by the id in the request
 exports.updatePseudo = (req, res) => {
   // Validate Request
@@ -211,31 +209,3 @@ exports.delete = (req, res) => {
         } else res.send({ message: `User was deleted successfully!` });
       });
 };
-
-//POSSIBLE IMPROVES
-
-// // Retrieve all Users from the database.
-// exports.findAll = (req, res) => {
-//   User.getAll((err, data) => {
-//     if (err)
-//       res.status(500).send({
-//         message:
-//           err.message || "Erreur"
-//       });
-//     else res.send(data);
-//   });
-// };
-
-
-
-// // Delete all Users from the database.
-// exports.deleteAll = (req, res) => {
-//     User.removeAll((err, data) => {
-//         if (err)
-//           res.status(500).send({
-//             message:
-//               err.message || "Some error occurred while removing all Users."
-//           });
-//         else res.send({ message: `All Users were deleted successfully!` });
-//       });
-// };

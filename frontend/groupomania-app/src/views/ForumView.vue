@@ -6,7 +6,6 @@
 	</div>
 	<form @submit="newPost" id="newPost">
 		<label class="post-title" for= "content"> Postez quelquechose   <b-icon-chat-dots-fill /> </label><textarea  required="required" maxlength="400" minlength="4" rows="6" cols="30" wrap="hard" v-model="postcontent" placeholder="Ecrivez ici ..." ></textarea>
-		<!--<input type="file" accept="image/png, image/jpeg" v-on:="imageUrl" Parcourir.../>-->
 		<p class="text-orange">{{this.postcontent.length}} / 400</p>
 		<div id="btn-form">
 			<input id="btn-newpost" type="submit" value="Publier"/>

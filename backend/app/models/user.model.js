@@ -93,8 +93,6 @@ User.remove = (id, result) => {
     result(null, res);
   });
 };
-
-
 User.findById = (id, result) => {
   sql.query(`SELECT users.id_user, users.pseudo, users.email, users.admin FROM users WHERE id_user = ${id}`, (err, res) => {
     if (err) {

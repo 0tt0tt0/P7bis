@@ -44,35 +44,3 @@ exports.getLikesByUserPostId = (req, res) => {
       res.send(data);
   });
 };
-// Delete a like with the specified id in the request
-exports.delete = (req, res) => {
-  token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, process.env.SECRET);
-  const userId = decodedToken.id_user;
-  Like.remove(req.params.like_post_id, userId, (err, data) => {
-      if (err) {
-        if (err.kind === "not_found") {
-          res.status(404).send({
-            message: `Not found like with id ${req.params.id}.`
-          });
-        } else {
-          res.status(500).send({
-            message: "Could not delete like with id " + req.params.id
-          });
-        }
-      } else res.send({ message: `like was deleted successfully!` });
-    });
-};
-
-// //POSSIBLE IMPROVES
-// // Delete all Users from the database.
-// exports.deleteAll = (req, res) => {
-//     Like.removeAll((err, data) => {
-//         if (err)
-//           res.status(500).send({
-//             message:
-//               err.message || "Some error occurred while removing all likes."
-//           });
-//         else res.send({ message: `All likes were deleted successfully!` });
-//       });
-// };

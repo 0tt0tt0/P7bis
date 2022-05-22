@@ -60,16 +60,4 @@ Like.remove = (like_post_id, like_user_id, result) => {
   });
 };
 
-//POSSIBLE IMPROVES
-// Like.removeAll = result => {
-//   sql.query("DELETE FROM likes", (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-//     console.log(`deleted ${res.affectedRows} likes`);
-//     result(null, res);
-//   });
-// };
 module.exports = Like;

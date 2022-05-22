@@ -12,9 +12,5 @@ module.exports = app => {
     // Delete a like with id
     router.delete("/:like_post_id",auth, likes.delete);
 
-    //POSSIBLE IMPROVES
-    // // Delete all likes
-    // router.delete("/", likes.deleteAll);
-    
     app.use('/api/likes', router);   
 };

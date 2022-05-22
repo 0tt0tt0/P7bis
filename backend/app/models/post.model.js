@@ -54,37 +54,4 @@ Post.remove = (id, result) => {
   });
 };
 
-//POSSIBLE IMPROVES
-
-// Post.updateById = (id, post, result) => {
-//   sql.query(
-//     "UPDATE posts SET content = ?, imageUrl = ? WHERE id = ?",
-//     [post.content, post.imageUrl, id],
-//     (err, res) => {
-//       if (err) {
-//         console.log("error: ", err);
-//         result(null, err);
-//         return;
-//       }
-//       if (res.affectedRows == 0) {
-//         // Post introuvable avec l'id
-//         result({ kind: "not_found" }, null);
-//         return;
-//       }
-//       console.log("updated post: ", { id: id, ...post });
-//       result(null, { id: id, ...post });
-//     }
-//   );
-// };
-// Post.removeAll = result => {
-//   sql.query("DELETE FROM posts", (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-//     console.log(`deleted ${res.affectedRows} posts`);
-//     result(null, res);
-//   });
-// };
 module.exports = Post;

@@ -18,13 +18,5 @@ module.exports = app => {
     // Retrieve a single user with id
     router.get("/one", auth, users.findOne);
 
-    //POSSIBLE IMPROVES
-
-    // // Retrieve all users
-    // router.get("/", users.findAll);
-   
-    // // Delete all users
-    // router.delete("/", users.deleteAll);
-
     app.use('/api/users', router);   
 };

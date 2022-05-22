@@ -96,7 +96,7 @@ User.remove = (id, result) => {
 
 
 User.findById = (id, result) => {
-  sql.query(`SELECT users.pseudo, users.email, users.admin FROM users WHERE id_user = ${id}`, (err, res) => {
+  sql.query(`SELECT users.id_user, users.pseudo, users.email, users.admin FROM users WHERE id_user = ${id}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -112,28 +112,4 @@ User.findById = (id, result) => {
   });
 };
 
-
-// User.getAll = result => {
-//   let query = "SELECT * FROM users";
-//   sql.query(query, (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-//     result(null, res);
-//     console.log(res);
-//   });
-// };
-// User.removeAll = result => {
-//   sql.query("DELETE FROM users", (err, res) => {
-//     if (err) {
-//       console.log("error: ", err);
-//       result(null, err);
-//       return;
-//     }
-//     console.log(`deleted ${res.affectedRows} users`);
-//     result(null, res);
-//   });
-// };
 module.exports = User;

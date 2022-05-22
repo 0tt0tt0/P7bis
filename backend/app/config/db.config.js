@@ -1,8 +1,11 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 
 module.exports = {
-    HOST: "localhost",
-    USER: "root",
-    PASSWORD: "Macb00kpr0",
-    DB: "Groupomania"
+    HOST: process.env.HOST,
+    USER: process.env.DB_USER,
+    PASSWORD: process.env.PASSWORD,
+    DB: process.env.DB
   };
 
